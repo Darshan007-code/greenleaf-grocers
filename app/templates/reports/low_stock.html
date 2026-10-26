@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Low Stock & Reorder Report{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-danger mb-1">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> Low-Stock & Reorder Alerts
+        </h1>
+        <p class="text-muted small mb-0">Products that have reached or fallen below safety stock thresholds requiring immediate procurement.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('reports.export_report_csv', report_type='low-stock') }}" class="btn btn-outline-danger shadow-sm">
+            <i class="fa-solid fa-file-csv me-1"></i> Export Reorder List (CSV)
+        </a>
+        <a href="{{ url_for('products.index', status='low_stock') }}" class="btn btn-outline-secondary shadow-sm">
+            <i class="fa-solid fa-boxes-stacked me-1"></i> View in Catalog
+        </a>
+    </div>
+</div>
+
+<!-- Alert Banner -->
+<div class="alert alert-danger d-flex align-items-center justify-content-between p-3 rounded-3 shadow-sm mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <i class="fa-solid fa-boxes-packing fs-2 text-danger"></i>
+        <div>
+            <h5 class="fw-bold mb-0">{{ products|length }} Items Require Restocking</h5>
+            <small class="text-muted">Estimated reorder replenishment units: <strong>{{ total_shortage }} units</strong></small>
+        </div>
+    </div>
+    <span class="badge bg-danger fs-6 px-3 py-2">Action Required</span>
+</div>
+
+<!-- Reorder Table -->
+<div class="card stat-card p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th class="text-center">Current Stock</th>
+                    <th class="text-center">Reorder Threshold</th>
+                    <th class="text-center">Suggested Order</th>
+                    <th class="text-end">Unit Price</th>
+                    <th>Assigned Supplier</th>
+                    <th>Supplier Phone</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td class="text-muted small">{{ p.product_id }}</td>
+                    <td class="fw-bold text-dark">{{ p.name }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ p.category }}</span></td>
+                    <td class="text-center">
+                        <span class="badge {% if p.stock_qty == 0 %}bg-danger{% else %}badge-low-stock{% endif %}">
+                            {{ p.stock_qty }} units
+                        </span>
+                    </td>
+                    <td class="text-center text-muted fw-semibold">{{ p.reorder_level }}</td>
+                    <td class="text-center">
+                        <span class="badge bg-primary text-white fw-bold">
+                            +{{ [10, (p.reorder_level * 2) - p.stock_qty]|max }} units
+                        </span>
+                    </td>
+                    <td class="text-end text-success fw-semibold">{{ p.unit_price | currency }}</td>
+                    <td>{{ p.supplier.name if p.supplier else '<span class="text-muted">Unassigned</span>'|safe }}</td>
+                    <td class="font-monospace small">{{ p.supplier.phone if p.supplier and p.supplier.phone else '-' }}</td>
+                    <td class="text-center">
+                        <a href="{{ url_for('products.edit', product_id=p.product_id) }}" class="btn btn-sm btn-outline-success">
+                            <i class="fa-solid fa-plus me-1"></i> Restock
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10" class="text-center text-success py-5">
+                        <i class="fa-solid fa-circle-check fs-2 d-block mb-2 text-success"></i>
+                        Outstanding! All catalog products are comfortably above minimum reorder levels.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

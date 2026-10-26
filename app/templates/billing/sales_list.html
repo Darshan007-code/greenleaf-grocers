@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Sales History{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Sales & Billing Records</h1>
+        <p class="text-muted small mb-0">Search historical orders, reprint customer receipts, or download PDF tax invoices.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('billing.pos') }}" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-cash-register me-1"></i> New Sale (POS)
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card stat-card p-3 mb-4">
+    <form method="GET" action="{{ url_for('billing.sales_history') }}" class="row g-2 align-items-center">
+        <div class="col-12 col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-white text-muted border-end-0">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search by Invoice # or Customer name..." value="{{ query_str }}">
+            </div>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <input type="date" name="date" class="form-control" value="{{ date_filter }}">
+        </div>
+
+        <div class="col-6 col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-success w-100">
+                <i class="fa-solid fa-filter me-1"></i> Filter
+            </button>
+            {% if query_str or date_filter %}
+            <a href="{{ url_for('billing.sales_history') }}" class="btn btn-light border" title="Reset">
+                <i class="fa-solid fa-rotate-left"></i>
+            </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Sales Table -->
+<div class="card stat-card p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Date & Time</th>
+                    <th>Cashier</th>
+                    <th>Customer</th>
+                    <th>Payment</th>
+                    <th class="text-center">Items</th>
+                    <th class="text-end">Subtotal</th>
+                    <th class="text-end">Discount</th>
+                    <th class="text-end">Grand Total</th>
+                    <th class="text-center" style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sales %}
+                <tr>
+                    <td class="fw-bold font-monospace text-dark">{{ s.invoice_no }}</td>
+                    <td class="small">
+                        <div>{{ s.sale_date | date_format }}</div>
+                        <span class="text-muted" style="font-size: 0.75rem;">{{ s.sale_time.strftime('%I:%M %p') }}</span>
+                    </td>
+                    <td class="small text-muted">{{ s.cashier.full_name or s.cashier.username if s.cashier else 'System' }}</td>
+                    <td>{{ s.customer_name }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ s.payment_method }}</span></td>
+                    <td class="text-center"><span class="badge bg-secondary-subtle text-secondary">{{ s.items|length }}</span></td>
+                    <td class="text-end text-muted small">${{ "%.2f"|format(s.subtotal) }}</td>
+                    <td class="text-end text-danger small">{% if s.discount > 0 %}-${{ "%.2f"|format(s.discount) }}{% else %}-$0.00{% endif %}</td>
+                    <td class="text-end fw-bold text-success">${{ "%.2f"|format(s.total_amount) }}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
+                            <a href="{{ url_for('billing.receipt', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border" title="View / Print Receipt">
+                                <i class="fa-solid fa-eye text-primary"></i>
+                            </a>
+                            <a href="{{ url_for('billing.download_pdf', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border" title="Download PDF">
+                                <i class="fa-solid fa-file-pdf text-danger"></i>
+                            </a>
+                            <a href="{{ url_for('billing.download_receipt_csv', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border" title="Download CSV">
+                                <i class="fa-solid fa-file-csv text-secondary"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-5">
+                        <i class="fa-solid fa-receipt fs-2 d-block mb-2 text-muted"></i>
+                        No sales found matching your criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="p-3 border-top bg-light text-muted small d-flex justify-content-between">
+        <span>Showing <strong>{{ sales|length }}</strong> records</span>
+        <span>Sales & Billing Ledger</span>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Expiry Tracker & Waste Prevention{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">
+            <i class="fa-solid fa-clock-rotate-left text-warning me-2"></i> Expiry Tracker & Waste Prevention
+        </h1>
+        <p class="text-muted small mb-0">Identify items approaching expiry within 15 days or already expired to take proactive discounting actions.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('reports.export_report_csv', report_type='expiry') }}" class="btn btn-outline-warning text-dark shadow-sm">
+            <i class="fa-solid fa-file-csv me-1"></i> Export Expiry CSV
+        </a>
+    </div>
+</div>
+
+<!-- Risk Metrics Banner -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 border-start border-4 border-danger">
+            <span class="text-muted small fw-semibold text-uppercase">Expired Products</span>
+            <h3 class="fw-bold mb-0 mt-1 text-danger">{{ expired_products|length }}</h3>
+            <span class="text-muted small">Must be quarantined or written off</span>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 border-start border-4 border-warning">
+            <span class="text-muted small fw-semibold text-uppercase">Expiring within 15 Days</span>
+            <h3 class="fw-bold mb-0 mt-1 text-warning">{{ near_expiry_products|length }}</h3>
+            <span class="text-muted small">Candidate for promotional discounting</span>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 border-start border-4 border-info">
+            <span class="text-muted small fw-semibold text-uppercase">Total Capital at Risk</span>
+            <h3 class="fw-bold mb-0 mt-1 text-dark">${{ "%.2f"|format(total_at_risk_value) }}</h3>
+            <span class="text-muted small">Combined inventory cost/value</span>
+        </div>
+    </div>
+</div>
+
+<!-- Expired Products Table -->
+{% if expired_products %}
+<div class="card stat-card p-0 overflow-hidden mb-4 border-danger">
+    <div class="card-header bg-danger text-white py-2 px-3 fw-bold d-flex justify-content-between align-items-center">
+        <span><i class="fa-solid fa-ban me-1"></i> Expired Items (Action: Remove from sales floor)</span>
+        <span class="badge bg-white text-danger">{{ expired_products|length }} items</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-end">Unit Price</th>
+                    <th>Expiry Date</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-end">Loss Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in expired_products %}
+                <tr>
+                    <td class="text-muted">{{ p.product_id }}</td>
+                    <td class="fw-bold text-dark">{{ p.name }}</td>
+                    <td><span class="badge bg-light text-secondary">{{ p.category }}</span></td>
+                    <td class="text-center fw-bold">{{ p.stock_qty }}</td>
+                    <td class="text-end">${{ "%.2f"|format(p.unit_price) }}</td>
+                    <td class="text-danger fw-semibold">{{ p.expiry_date | date_format }}</td>
+                    <td class="text-center"><span class="badge badge-expired">EXPIRED</span></td>
+                    <td class="text-end fw-bold text-danger">${{ "%.2f"|format(p.stock_qty * p.unit_price) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Near Expiry Products Table -->
+<div class="card stat-card p-0 overflow-hidden">
+    <div class="card-header bg-light py-2 px-3 fw-bold d-flex justify-content-between align-items-center">
+        <span><i class="fa-solid fa-hourglass-half text-warning me-1"></i> Products Expiring within 15 Days</span>
+        <span class="badge bg-warning text-dark">{{ near_expiry_products|length }} items</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-end">Unit Price</th>
+                    <th>Expiry Date</th>
+                    <th class="text-center">Days Remaining</th>
+                    <th class="text-end">At Risk Value</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in near_expiry_products %}
+                <tr>
+                    <td class="text-muted">{{ p.product_id }}</td>
+                    <td class="fw-bold text-dark">{{ p.name }}</td>
+                    <td><span class="badge bg-light text-secondary">{{ p.category }}</span></td>
+                    <td class="text-center fw-bold">{{ p.stock_qty }}</td>
+                    <td class="text-end">${{ "%.2f"|format(p.unit_price) }}</td>
+                    <td class="fw-semibold">{{ p.expiry_date | date_format }}</td>
+                    <td class="text-center">
+                        <span class="badge badge-near-expiry">{{ p.days_until_expiry }} days left</span>
+                    </td>
+                    <td class="text-end fw-bold text-dark">${{ "%.2f"|format(p.stock_qty * p.unit_price) }}</td>
+                    <td class="text-center">
+                        <a href="{{ url_for('products.edit', product_id=p.product_id) }}" class="btn btn-sm btn-outline-warning text-dark">
+                            <i class="fa-solid fa-tag me-1"></i> Discount
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center text-success py-4">
+                        <i class="fa-solid fa-circle-check fs-2 d-block mb-2 text-success"></i>
+                        No products are expiring within the next 15 days. Shelf freshness is high!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

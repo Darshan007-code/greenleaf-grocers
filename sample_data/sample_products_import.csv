@@ -1,0 +1,7 @@
+name,category,unit_price,cost_price,stock_qty,reorder_level,expiry_date,barcode
+Organic Avocados (Hass),Fresh Produce,2.49,1.50,45,15,2026-11-05,078912345001
+Greek Whole Milk Yogurt (32oz),Dairy & Eggs,4.99,3.10,24,10,2026-11-12,078912345002
+Sourdough Artisan Batard,Bakery,5.25,2.75,18,8,2026-10-31,078912345003
+Cold-Pressed Orange Juice (1L),Beverages,4.49,2.80,30,12,2026-11-15,078912345004
+Almond Butter Unsweetened (16oz),Pantry & Grains,7.99,5.20,20,8,2027-04-30,078912345005
+Raw Organic Mixed Nuts (12oz),Snacks & Sweets,6.99,4.40,35,10,2027-02-28,078912345006

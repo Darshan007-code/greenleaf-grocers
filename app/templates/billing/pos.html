@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}POS Billing Terminal{% endblock %}
+
+{% block content %}
+<div id="posToastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1080; max-width: 380px;"></div>
+
+<div class="row g-3">
+    <!-- Left Column: Products Catalog & Search -->
+    <div class="col-12 col-lg-7 col-xl-8">
+        <!-- Top Toolbar: Barcode & Name Search -->
+        <div class="card stat-card p-3 mb-3">
+            <div class="row g-2">
+                <!-- Barcode Scanner input -->
+                <div class="col-12 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-success border-end-0">
+                            <i class="fa-solid fa-barcode"></i>
+                        </span>
+                        <input type="text" id="posBarcodeInput" class="form-control border-start-0 ps-0" placeholder="Scan barcode & press Enter..." autofocus>
+                    </div>
+                </div>
+
+                <!-- Text Search -->
+                <div class="col-12 col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-muted border-end-0">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="posSearchInput" class="form-control border-start-0 ps-0" placeholder="Type product name to search...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Pills Filter -->
+            <div class="d-flex gap-1 overflow-auto mt-3 pb-1">
+                <button type="button" class="btn btn-sm btn-success cat-filter-btn active" data-category="">
+                    All Items
+                </button>
+                {% for cat in categories %}
+                <button type="button" class="btn btn-sm btn-outline-secondary cat-filter-btn text-nowrap" data-category="{{ cat }}">
+                    {{ cat }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div class="row g-3" id="posProductGrid">
+            {% for p in initial_products %}
+            <div class="col-6 col-md-4 col-xl-3">
+                <div class="pos-product-card p-3 h-100 d-flex flex-column justify-content-between {% if p.stock_qty <= 0 %}out-of-stock{% endif %}"
+                     onclick="{% if p.stock_qty > 0 %}pos.addToCart({{ p.to_dict() | tojson | forceescape }}){% endif %}">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="badge bg-light text-secondary small text-truncate" style="max-width: 80px;">{{ p.category }}</span>
+                            <span class="badge {% if p.is_low_stock %}badge-low-stock{% else %}badge-healthy{% endif %}">{{ p.stock_qty }} left</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1 text-truncate" title="{{ p.name }}">{{ p.name }}</h6>
+                        <small class="text-muted d-block font-monospace" style="font-size: 0.75rem;">{{ p.barcode or '' }}</small>
+                    </div>
+                    <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-success fs-5">${{ "%.2f"|format(p.unit_price) }}</span>
+                        {% if p.stock_qty <= 0 %}
+                            <span class="badge bg-danger">Sold Out</span>
+                        {% else %}
+                            <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-plus"></i></button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Right Column: Cart Panel & Checkout -->
+    <div class="col-12 col-lg-5 col-xl-4">
+        <div class="cart-panel p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping text-success fs-5"></i>
+                    <h5 class="fw-bold text-dark mb-0">Current Order</h5>
+                    <span class="badge bg-success-subtle text-success border rounded-pill" id="cartItemCount">0</span>
+                </div>
+                <button type="button" id="posClearCartBtn" class="btn btn-sm btn-outline-danger" title="Clear Cart">
+                    <i class="fa-solid fa-trash-can"></i> Clear
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div class="cart-items-container mb-3" id="cartItemsContainer"></div>
+
+            <div id="emptyCartMsg" class="text-center py-5 text-muted">
+                <i class="fa-solid fa-basket-shopping fs-1 d-block mb-2 text-muted"></i>
+                <p class="mb-0 small">Scan a barcode or click products to add them to this order.</p>
+            </div>
+
+            <!-- Customer Details Accordion/Section -->
+            <div class="bg-light p-2 rounded-3 mb-3 border">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="text" id="posCustomerName" class="form-control form-control-sm" placeholder="Customer Name" value="Walk-in Customer">
+                    </div>
+                    <div class="col-6">
+                        <input type="text" id="posCustomerPhone" class="form-control form-control-sm" placeholder="Phone (Optional)">
+                    </div>
+                    <div class="col-6">
+                        <select id="posPaymentMethod" class="form-select form-select-sm">
+                            <option value="Cash">Cash</option>
+                            <option value="Card">Card</option>
+                            <option value="UPI / Digital">UPI / Digital</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white text-muted">Disc $</span>
+                            <input type="number" step="0.50" min="0" id="posDiscountInput" class="form-control" placeholder="0.00" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Financial Summary -->
+            <div class="border-top pt-2 mb-3 small">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Subtotal:</span>
+                    <span class="fw-bold text-dark" id="cartSubtotal">$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Discount:</span>
+                    <span class="text-danger fw-semibold" id="cartDiscount">-$0.00</span>
+                </div>
+                <div class="d-flex justify-content-between pt-2 border-top">
+                    <span class="h5 fw-bold text-dark mb-0">Total Due:</span>
+                    <span class="h5 fw-bold text-success mb-0" id="cartTotal">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <button type="button" id="posCheckoutBtn" class="btn btn-success w-100 py-3 fw-bold fs-6 shadow-sm" disabled>
+                <i class="fa-solid fa-check-double me-1"></i> Complete Checkout
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Success Modal -->
+<div class="modal fade" id="checkoutSuccessModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg text-center p-4">
+            <div class="stat-icon icon-rev mx-auto mb-3" style="width: 72px; height: 72px; font-size: 2.5rem;">
+                <i class="fa-solid fa-circle-check text-success"></i>
+            </div>
+            <h4 class="fw-bold text-success mb-1">Sale Completed!</h4>
+            <p class="text-muted small mb-3">Stock has been automatically updated in inventory.</p>
+
+            <div class="bg-light p-3 rounded-3 mb-4 border">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted small">Invoice Number:</span>
+                    <span class="fw-bold text-dark font-monospace" id="modalInvoiceNo">GL-000000</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">Total Paid:</span>
+                    <span class="fw-bold text-success fs-5" id="modalTotalAmount">$0.00</span>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+                <a id="modalReceiptLink" href="#" target="_blank" class="btn btn-primary fw-semibold py-2">
+                    <i class="fa-solid fa-receipt me-1"></i> Print / View Receipt
+                </a>
+                <a id="modalPdfLink" href="#" class="btn btn-outline-danger fw-semibold py-2">
+                    <i class="fa-solid fa-file-pdf me-1"></i> Download PDF Invoice
+                </a>
+                <button type="button" class="btn btn-light border py-2 mt-2" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-plus me-1"></i> Next Customer / New Sale
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/pos.js') }}"></script>
+{% endblock %}

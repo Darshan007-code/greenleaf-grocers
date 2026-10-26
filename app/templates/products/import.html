@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Import Products CSV{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card stat-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <div>
+                    <h3 class="fw-bold text-dark mb-1">Import Products from CSV</h3>
+                    <p class="text-muted small mb-0">Upload a spreadsheet of products to bulk populate the catalog.</p>
+                </div>
+                <a href="{{ url_for('products.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back
+                </a>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-secondary">Select CSV File</label>
+                    <input type="file" name="csv_file" class="form-control" accept=".csv" required>
+                    <span class="form-text small text-muted">File must be formatted as UTF-8 comma-separated values (.csv).</span>
+                </div>
+
+                <div class="card bg-light border-0 p-3 mb-4 rounded-3">
+                    <h6 class="fw-bold small text-dark mb-2">Expected CSV Header Format:</h6>
+                    <code class="small text-dark d-block mb-2">
+                        name,category,unit_price,cost_price,stock_qty,reorder_level,expiry_date,barcode
+                    </code>
+                    <p class="small text-muted mb-0">
+                        • <strong>Required:</strong> name, category, unit_price.<br>
+                        • <strong>Optional:</strong> cost_price, stock_qty (default 0), reorder_level (default 10), expiry_date (YYYY-MM-DD), barcode.
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('products.export_csv') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-download me-1"></i> Download Current CSV Template
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                        <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload & Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

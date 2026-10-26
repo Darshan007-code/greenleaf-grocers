@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 75vh;">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="stat-icon icon-rev mx-auto mb-3" style="width: 64px; height: 64px; font-size: 2rem;">
+                        <i class="fa-solid fa-leaf text-success"></i>
+                    </div>
+                    <h3 class="fw-bold text-success mb-1">GreenLeaf Grocers</h3>
+                    <p class="text-muted small">Inventory & Sales Management System</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label small fw-bold text-secondary">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="username" name="username" placeholder="Enter username" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label small fw-bold text-secondary">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" placeholder="Enter password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-semibold shadow-sm mb-3">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Sign In
+                    </button>
+                </form>
+
+                <!-- Demo quick login helper -->
+                <div class="border-top pt-3 text-center">
+                    <p class="small text-muted mb-2">Quick Demo Access (Click to auto-fill):</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-success" onclick="fillCreds('admin', 'admin123')">
+                            <i class="fa-solid fa-shield-halved me-1"></i> Admin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="fillCreds('cashier', 'cashier123')">
+                            <i class="fa-solid fa-cash-register me-1"></i> Cashier
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function fillCreds(u, p) {
+    document.getElementById('username').value = u;
+    document.getElementById('password').value = p;
+}
+</script>
+{% endblock %}

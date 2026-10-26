@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Supplier{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-6">
+        <div class="card stat-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <div>
+                    <h3 class="fw-bold text-dark mb-1">{{ action }} Supplier</h3>
+                    <p class="text-muted small mb-0">Record vendor contact details and terms.</p>
+                </div>
+                <a href="{{ url_for('suppliers.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back
+                </a>
+            </div>
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Supplier / Company Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. Valley Fresh Farms Ltd" value="{{ supplier.name if supplier else '' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Contact Person</label>
+                    <input type="text" name="contact_person" class="form-control" placeholder="e.g. John Miller" value="{{ supplier.contact_person if supplier else '' }}">
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold small text-secondary">Phone Number</label>
+                        <input type="text" name="phone" class="form-control" placeholder="(555) 123-4567" value="{{ supplier.phone if supplier else '' }}">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold small text-secondary">Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="orders@valleyfarms.com" value="{{ supplier.email if supplier else '' }}">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-secondary">Warehouse Address / Notes</label>
+                    <textarea name="address" rows="3" class="form-control" placeholder="Street, city, delivery notes...">{{ supplier.address if supplier else '' }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a href="{{ url_for('suppliers.index') }}" class="btn btn-light border px-4">Cancel</a>
+                    <button type="submit" class="btn btn-success px-4 fw-semibold">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Save Supplier
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
