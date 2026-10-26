@@ -30,7 +30,7 @@ erDiagram
         int user_id PK
         string username UK
         string password_hash
-        string role "admin | cashier"
+        string role
         string full_name
         datetime created_at
     }
@@ -47,13 +47,13 @@ erDiagram
 
     PRODUCTS {
         int product_id PK
-        string name INDEX
-        string category INDEX
+        string name
+        string category
         float unit_price
         float cost_price
         int stock_qty
         int reorder_level
-        date expiry_date INDEX
+        date expiry_date
         string barcode UK
         int supplier_id FK
         boolean is_active
@@ -63,9 +63,9 @@ erDiagram
     SALES {
         int sale_id PK
         string invoice_no UK
-        date sale_date INDEX
+        date sale_date
         time sale_time
-        datetime sale_timestamp INDEX
+        datetime sale_timestamp
         int user_id FK
         string customer_name
         string customer_phone
