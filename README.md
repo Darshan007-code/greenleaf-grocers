@@ -201,6 +201,42 @@ python -m pytest tests/ -v
 
 ---
 
+## 🚢 Deployment Guide
+
+### Option 1: Docker & Docker Compose (Recommended)
+Build and run the containerized application with a single command:
+```bash
+docker compose up --build -d
+```
+Access at `http://localhost:5000`.
+
+### Option 2: Cloud Platforms (Render / Railway / Fly.io)
+1. **Build Command**: `pip install -r requirements.txt && python seed_data.py`
+2. **Start Command**: `gunicorn wsgi:app`
+3. **Environment Variables**:
+   - `FLASK_CONFIG`: `production`
+   - `SECRET_KEY`: `<generate-a-random-secret>`
+   - `PORT`: `5000` (or platform default)
+
+---
+
+## 🐙 Git & GitHub Push Instructions
+
+To push this repository to your GitHub account:
+
+```bash
+# 1. Check your branch (already set to 'main')
+git branch
+
+# 2. Add your GitHub repository remote
+git remote add origin https://github.com/<YOUR_USERNAME>/<YOUR_REPOSITORY_NAME>.git
+
+# 3. Push to GitHub
+git push -u origin main
+```
+
+---
+
 ## 📂 Project Structure
 
 ```text
