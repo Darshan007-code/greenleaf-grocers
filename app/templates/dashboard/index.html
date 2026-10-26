@@ -1,35 +1,38 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Executive Dashboard{% endblock %}
 
 {% block content %}
+<!-- Dashboard Header -->
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
         <h1 class="h3 fw-bold text-dark mb-1">Executive Dashboard</h1>
-        <p class="text-muted small mb-0">Overview of GreenLeaf Grocers inventory health, sales velocity, and key operational alerts.</p>
+        <p class="text-muted small mb-0">Real-time store performance, inventory health velocity, and operational safety metrics.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
-        <a href="{{ url_for('billing.pos') }}" class="btn btn-primary shadow-sm">
-            <i class="fa-solid fa-cash-register me-1"></i> New Sale (POS)
+        <a href="{{ url_for('billing.pos') }}" class="btn btn-primary rounded-pill px-3 shadow-sm">
+            <i class="fa-solid fa-cash-register me-1"></i> Launch POS Billing
         </a>
-        <a href="{{ url_for('products.add') }}" class="btn btn-success shadow-sm">
+        <a href="{{ url_for('products.add') }}" class="btn btn-success rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-plus me-1"></i> Add Product
         </a>
-        <a href="{{ url_for('reports.index') }}" class="btn btn-outline-secondary shadow-sm">
-            <i class="fa-solid fa-chart-line me-1"></i> Detailed Analytics
+        <a href="{{ url_for('reports.index') }}" class="btn btn-light border rounded-pill px-3 shadow-sm">
+            <i class="fa-solid fa-chart-line me-1 text-success"></i> Full Analytics
         </a>
     </div>
 </div>
 
-<!-- 5 KPI Cards -->
+<!-- 5 KPI Summary Cards -->
 <div class="row g-3 mb-4">
     <!-- Total Revenue -->
     <div class="col-12 col-sm-6 col-xl">
-        <div class="card stat-card h-100 p-3">
+        <div class="card stat-card glow-green h-100 p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small fw-semibold text-uppercase">Total Revenue</span>
+                    <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Total Revenue</span>
                     <h3 class="fw-bold mb-0 mt-1 text-dark">{{ kpis.total_revenue | currency }}</h3>
-                    <span class="text-muted small">{{ kpis.total_bills }} total bills recorded</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle mt-1 small">
+                        <i class="fa-solid fa-receipt me-1"></i> {{ kpis.total_bills }} orders
+                    </span>
                 </div>
                 <div class="stat-icon icon-rev">
                     <i class="fa-solid fa-dollar-sign"></i>
@@ -40,12 +43,12 @@
 
     <!-- Avg Bill Value -->
     <div class="col-12 col-sm-6 col-xl">
-        <div class="card stat-card h-100 p-3">
+        <div class="card stat-card glow-blue h-100 p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small fw-semibold text-uppercase">Avg Bill Value</span>
+                    <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Avg Ticket</span>
                     <h3 class="fw-bold mb-0 mt-1 text-dark">{{ kpis.avg_bill_value | currency }}</h3>
-                    <span class="text-muted small">Per customer ticket</span>
+                    <span class="text-muted small">Per customer basket</span>
                 </div>
                 <div class="stat-icon icon-bill">
                     <i class="fa-solid fa-basket-shopping"></i>
@@ -56,10 +59,10 @@
 
     <!-- Stock Turnover -->
     <div class="col-12 col-sm-6 col-xl">
-        <div class="card stat-card h-100 p-3">
+        <div class="card stat-card glow-purple h-100 p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small fw-semibold text-uppercase">Stock Turnover</span>
+                    <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Stock Turnover</span>
                     <h3 class="fw-bold mb-0 mt-1 text-dark">{{ kpis.stock_turnover }}x</h3>
                     <span class="text-muted small">Sales / Inventory ratio</span>
                 </div>
@@ -72,15 +75,15 @@
 
     <!-- Low-Stock Alert -->
     <div class="col-12 col-sm-6 col-xl">
-        <div class="card stat-card h-100 p-3">
+        <div class="card stat-card glow-red h-100 p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small fw-semibold text-uppercase">Low Stock Alert</span>
+                    <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Low Stock Alert</span>
                     <h3 class="fw-bold mb-0 mt-1 {% if kpis.low_stock_count > 0 %}text-danger{% else %}text-success{% endif %}">
                         {{ kpis.low_stock_count }}
                     </h3>
                     <a href="{{ url_for('reports.low_stock') }}" class="text-decoration-none small text-danger fw-semibold">
-                        View reorder list <i class="fa-solid fa-arrow-right"></i>
+                        Reorder items <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
                 <div class="stat-icon icon-alert">
@@ -92,12 +95,12 @@
 
     <!-- Top Category Share -->
     <div class="col-12 col-sm-6 col-xl">
-        <div class="card stat-card h-100 p-3">
+        <div class="card stat-card glow-amber h-100 p-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
-                    <span class="text-muted small fw-semibold text-uppercase">Top Category</span>
+                    <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Top Category</span>
                     <h3 class="fw-bold mb-0 mt-1 text-dark">{{ kpis.top_category_share }}%</h3>
-                    <span class="text-muted small text-truncate d-block" style="max-width: 130px;">{{ kpis.top_category_name }}</span>
+                    <span class="text-muted small text-truncate d-block" style="max-width: 120px;" title="{{ kpis.top_category_name }}">{{ kpis.top_category_name }}</span>
                 </div>
                 <div class="stat-icon icon-cat">
                     <i class="fa-solid fa-pie-chart"></i>
@@ -111,14 +114,17 @@
 <div class="row g-3 mb-4">
     <!-- Daily Revenue Chart (Last 14 Days) -->
     <div class="col-12 col-lg-8">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-chart-line text-success me-2"></i> Recent Revenue Velocity (Last 14 Days)
-                </h6>
-                <span class="badge bg-light text-muted border">Daily Trend</span>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-chart-line text-success me-2"></i> Daily Sales Velocity
+                    </h6>
+                    <small class="text-muted">Revenue trend over the last 14 operating days</small>
+                </div>
+                <span class="badge bg-light text-secondary border">14-Day View</span>
             </div>
-            <div style="height: 280px; position: relative;">
+            <div style="height: 290px; position: relative;">
                 <canvas id="dailyRevenueChart"></canvas>
             </div>
         </div>
@@ -126,14 +132,17 @@
 
     <!-- Category Share Doughnut Chart -->
     <div class="col-12 col-lg-4">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-chart-pie text-warning me-2"></i> Category Revenue Share
-                </h6>
-                <a href="{{ url_for('reports.index') }}" class="small text-muted text-decoration-none">More</a>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-chart-pie text-warning me-2"></i> Revenue by Category
+                    </h6>
+                    <small class="text-muted">Sales contribution breakdown</small>
+                </div>
+                <a href="{{ url_for('reports.index') }}" class="small text-muted text-decoration-none">Details</a>
             </div>
-            <div style="height: 280px; position: relative;" class="d-flex align-items-center justify-content-center">
+            <div style="height: 290px; position: relative;" class="d-flex align-items-center justify-content-center">
                 <canvas id="categoryShareChart"></canvas>
             </div>
         </div>
@@ -144,50 +153,52 @@
 <div class="row g-3">
     <!-- Recent Transactions -->
     <div class="col-12 col-lg-7">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i> Recent Transactions
-                </h6>
-                <a href="{{ url_for('billing.sales_history') }}" class="btn btn-sm btn-outline-primary">
-                    View All Sales
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-clock-rotate-left text-primary me-2"></i> Recent POS Orders
+                    </h6>
+                    <small class="text-muted">Latest completed store sales transactions</small>
+                </div>
+                <a href="{{ url_for('billing.sales_history') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                    All History &rarr;
                 </a>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 small">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
                             <th>Invoice #</th>
-                            <th>Date / Time</th>
+                            <th>Time</th>
                             <th>Customer</th>
-                            <th>Method</th>
+                            <th>Payment</th>
                             <th class="text-end">Total</th>
-                            <th class="text-center">Action</th>
+                            <th class="text-center">Receipt</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for s in recent_sales %}
                         <tr>
-                            <td class="fw-bold text-dark">{{ s.invoice_no }}</td>
-                            <td>
-                                <div>{{ s.sale_date | date_format }}</div>
-                                <span class="text-muted" style="font-size: 0.75rem;">{{ s.sale_time.strftime('%I:%M %p') }}</span>
+                            <td class="fw-bold font-monospace text-dark" style="font-size: 0.85rem;">{{ s.invoice_no }}</td>
+                            <td class="small text-muted">
+                                {{ s.sale_date | date_format }}
                             </td>
-                            <td>{{ s.customer_name }}</td>
+                            <td class="small fw-semibold text-truncate" style="max-width: 140px;">{{ s.customer_name }}</td>
                             <td><span class="badge bg-light text-dark border">{{ s.payment_method }}</span></td>
-                            <td class="text-end fw-bold text-success">{{ s.total_amount | currency }}</td>
+                            <td class="text-end fw-bold text-success font-monospace">{{ s.total_amount | currency }}</td>
                             <td class="text-center">
-                                <a href="{{ url_for('billing.receipt', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border py-0 px-2" title="View Receipt">
+                                <a href="{{ url_for('billing.receipt', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border py-1 px-2" title="Print Receipt">
                                     <i class="fa-solid fa-eye text-primary"></i>
                                 </a>
-                                <a href="{{ url_for('billing.download_pdf', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border py-0 px-2" title="Download PDF">
+                                <a href="{{ url_for('billing.download_pdf', sale_id=s.sale_id) }}" class="btn btn-sm btn-light border py-1 px-2" title="Download PDF">
                                     <i class="fa-solid fa-file-pdf text-danger"></i>
                                 </a>
                             </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-3">No sales recorded yet.</td>
+                            <td colspan="6" class="text-center text-muted py-4">No sales recorded yet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -198,15 +209,22 @@
 
     <!-- Inventory Alerts (Low Stock & Near Expiry) -->
     <div class="col-12 col-lg-5">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0">
+                    <i class="fa-solid fa-bell text-danger me-2"></i> Priority Alerts
+                </h6>
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Real-Time</span>
+            </div>
+
             <ul class="nav nav-pills mb-3" id="alertTabs" role="tablist">
                 <li class="nav-item">
-                    <button class="nav-link active btn-sm" id="low-stock-tab" data-bs-toggle="pill" data-bs-target="#tab-low-stock">
+                    <button class="nav-link active btn-sm rounded-pill" id="low-stock-tab" data-bs-toggle="pill" data-bs-target="#tab-low-stock">
                         <i class="fa-solid fa-triangle-exclamation text-danger me-1"></i> Low Stock ({{ low_stock_products|length }})
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn-sm" id="expiry-tab" data-bs-toggle="pill" data-bs-target="#tab-expiry">
+                    <button class="nav-link btn-sm rounded-pill" id="expiry-tab" data-bs-toggle="pill" data-bs-target="#tab-expiry">
                         <i class="fa-solid fa-clock text-warning me-1"></i> Near Expiry ({{ near_expiry_products|length }})
                     </button>
                 </li>
@@ -217,7 +235,7 @@
                 <div class="tab-pane fade show active" id="tab-low-stock">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0 small">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>Product</th>
                                     <th>Category</th>
@@ -228,13 +246,13 @@
                             <tbody>
                                 {% for p in low_stock_products %}
                                 <tr>
-                                    <td class="fw-semibold text-truncate" style="max-width: 140px;">{{ p.name }}</td>
+                                    <td class="fw-bold text-truncate" style="max-width: 140px;">{{ p.name }}</td>
                                     <td><span class="badge bg-light text-secondary">{{ p.category }}</span></td>
                                     <td class="text-center"><span class="badge badge-low-stock">{{ p.stock_qty }}</span></td>
                                     <td class="text-center text-muted">{{ p.reorder_level }}</td>
                                 </tr>
                                 {% else %}
-                                <tr><td colspan="4" class="text-center text-success py-3"><i class="fa-solid fa-check-circle me-1"></i> All stock levels healthy!</td></tr>
+                                <tr><td colspan="4" class="text-center text-success py-3"><i class="fa-solid fa-check-circle me-1"></i> All stock levels are healthy!</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -250,7 +268,7 @@
                 <div class="tab-pane fade" id="tab-expiry">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0 small">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>Product</th>
                                     <th>Category</th>
@@ -261,7 +279,7 @@
                             <tbody>
                                 {% for p in near_expiry_products %}
                                 <tr>
-                                    <td class="fw-semibold text-truncate" style="max-width: 140px;">{{ p.name }}</td>
+                                    <td class="fw-bold text-truncate" style="max-width: 140px;">{{ p.name }}</td>
                                     <td><span class="badge bg-light text-secondary">{{ p.category }}</span></td>
                                     <td>{{ p.expiry_date | date_format }}</td>
                                     <td class="text-center">
@@ -294,6 +312,12 @@
     const dailyRevenues = dailyData.map(d => d.revenue);
 
     const ctxDaily = document.getElementById('dailyRevenueChart').getContext('2d');
+    
+    // Create beautiful linear gradient
+    const gradientDaily = ctxDaily.createLinearGradient(0, 0, 0, 260);
+    gradientDaily.addColorStop(0, 'rgba(22, 163, 74, 0.28)');
+    gradientDaily.addColorStop(1, 'rgba(22, 163, 74, 0.01)');
+
     new Chart(ctxDaily, {
         type: 'line',
         data: {
@@ -301,12 +325,13 @@
             datasets: [{
                 label: 'Revenue ($)',
                 data: dailyRevenues,
-                borderColor: '#2e7d32',
-                backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                borderColor: '#16a34a',
+                backgroundColor: gradientDaily,
                 fill: true,
-                tension: 0.3,
-                borderWidth: 2,
-                pointBackgroundColor: '#2e7d32',
+                tension: 0.35,
+                borderWidth: 2.5,
+                pointBackgroundColor: '#16a34a',
+                pointHoverRadius: 6,
                 pointRadius: 4
             }]
         },
@@ -316,17 +341,28 @@
             plugins: {
                 legend: { display: false },
                 tooltip: {
+                    backgroundColor: '#0f172a',
+                    titleFont: { family: 'Plus Jakarta Sans', size: 12 },
+                    bodyFont: { family: 'Plus Jakarta Sans', size: 13, weight: 'bold' },
+                    padding: 10,
+                    cornerRadius: 8,
                     callbacks: {
                         label: function(context) {
-                            return '$' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2});
+                            return ' Revenue: $' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2});
                         }
                     }
                 }
             },
             scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+                },
                 y: {
                     beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
                     ticks: {
+                        font: { family: 'Plus Jakarta Sans', size: 11 },
                         callback: function(val) { return '$' + val; }
                     }
                 }
@@ -334,11 +370,11 @@
         }
     });
 
-    // Prepare Category Share Data
+    // Category Doughnut Chart
     const catData = {{ category_sales | tojson }};
     const catLabels = catData.map(c => c.category);
     const catValues = catData.map(c => c.total_revenue);
-    const catColors = ['#2e7d32', '#4caf50', '#81c784', '#0288d1', '#ed6c02', '#ab47bc'];
+    const catColors = ['#16a34a', '#22c55e', '#0284c7', '#38bdf8', '#f59e0b', '#ec4899', '#8b5cf6'];
 
     const ctxCat = document.getElementById('categoryShareChart').getContext('2d');
     new Chart(ctxCat, {
@@ -348,19 +384,24 @@
             datasets: [{
                 data: catValues,
                 backgroundColor: catColors,
-                borderWidth: 2,
-                borderColor: '#ffffff'
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 4
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '68%',
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { boxWidth: 12, font: { size: 10 } }
+                    labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 }, padding: 12 }
                 },
                 tooltip: {
+                    backgroundColor: '#0f172a',
+                    padding: 10,
+                    cornerRadius: 8,
                     callbacks: {
                         label: function(context) {
                             return ' ' + context.label + ': $' + context.raw.toLocaleString(undefined, {minimumFractionDigits: 2});

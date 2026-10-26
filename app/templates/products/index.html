@@ -4,17 +4,17 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">Product Inventory</h1>
-        <p class="text-muted small mb-0">Browse, search, edit, and restock products in the GreenLeaf Grocers catalog.</p>
+        <h1 class="h3 fw-bold text-dark mb-1">Product Inventory Catalog</h1>
+        <p class="text-muted small mb-0">Browse SKUs, inspect stock levels, print barcodes, import CSVs, and adjust prices.</p>
     </div>
     <div class="d-flex flex-wrap gap-2">
-        <a href="{{ url_for('products.add') }}" class="btn btn-success shadow-sm">
+        <a href="{{ url_for('products.add') }}" class="btn btn-success rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-plus me-1"></i> Add Product
         </a>
-        <a href="{{ url_for('products.import_csv') }}" class="btn btn-outline-primary shadow-sm">
+        <a href="{{ url_for('products.import_csv') }}" class="btn btn-outline-primary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-file-import me-1"></i> Import CSV
         </a>
-        <a href="{{ url_for('products.export_csv') }}" class="btn btn-outline-secondary shadow-sm">
+        <a href="{{ url_for('products.export_csv') }}" class="btn btn-outline-secondary rounded-pill px-3 shadow-sm">
             <i class="fa-solid fa-file-export me-1"></i> Export CSV
         </a>
     </div>
@@ -29,16 +29,18 @@
                 <span class="input-group-text bg-white text-muted border-end-0">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search by product name or barcode..." value="{{ query_str }}">
+                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search by name or 12-digit barcode..." value="{{ query_str }}">
             </div>
         </div>
 
         <!-- Category Dropdown -->
         <div class="col-6 col-md-3">
             <select name="category" class="form-select">
-                <option value="">All Categories</option>
+                <option value="">All Categories (59 SKUs)</option>
                 {% for cat in categories %}
-                <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>{{ cat }}</option>
+                <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>
+                    {{ cat }}
+                </option>
                 {% endfor %}
             </select>
         </div>
@@ -46,7 +48,7 @@
         <!-- Status Filter -->
         <div class="col-6 col-md-2">
             <select name="status" class="form-select">
-                <option value="" {% if not status_filter %}selected{% endif %}>All Statuses</option>
+                <option value="" {% if not status_filter %}selected{% endif %}>All Health States</option>
                 <option value="low_stock" {% if status_filter == 'low_stock' %}selected{% endif %}>⚠️ Low Stock</option>
                 <option value="near_expiry" {% if status_filter == 'near_expiry' %}selected{% endif %}>⏰ Near Expiry</option>
                 <option value="expired" {% if status_filter == 'expired' %}selected{% endif %}>🚫 Expired</option>
@@ -55,11 +57,11 @@
 
         <!-- Submit & Reset -->
         <div class="col-12 col-md-2 d-flex gap-2">
-            <button type="submit" class="btn btn-success w-100">
+            <button type="submit" class="btn btn-success flex-grow-1 rounded-pill">
                 <i class="fa-solid fa-filter me-1"></i> Filter
             </button>
             {% if query_str or current_category or status_filter %}
-            <a href="{{ url_for('products.index') }}" class="btn btn-light border" title="Reset Filters">
+            <a href="{{ url_for('products.index') }}" class="btn btn-light border rounded-circle" style="width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;" title="Reset filters">
                 <i class="fa-solid fa-rotate-left"></i>
             </a>
             {% endif %}
@@ -71,7 +73,7 @@
 <div class="card stat-card p-0 overflow-hidden">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+            <thead>
                 <tr>
                     <th style="width: 50px;">#</th>
                     <th>Product Name</th>
@@ -90,22 +92,33 @@
                 <tr>
                     <td class="text-muted small">{{ p.product_id }}</td>
                     <td>
-                        <div class="fw-semibold text-dark">{{ p.name }}</div>
+                        <div class="fw-bold text-dark">{{ p.name }}</div>
                         {% if p.is_expired %}
-                            <span class="badge badge-expired" style="font-size: 0.7rem;">EXPIRED</span>
+                            <span class="badge badge-expired" style="font-size: 0.68rem;">EXPIRED</span>
                         {% elif p.is_near_expiry() %}
-                            <span class="badge badge-near-expiry" style="font-size: 0.7rem;">Expiring in {{ p.days_until_expiry }}d</span>
+                            <span class="badge badge-near-expiry" style="font-size: 0.68rem;">Expiring in {{ p.days_until_expiry }}d</span>
                         {% elif p.is_low_stock %}
-                            <span class="badge badge-low-stock" style="font-size: 0.7rem;">LOW STOCK</span>
+                            <span class="badge badge-low-stock" style="font-size: 0.68rem;">LOW STOCK</span>
                         {% endif %}
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border">{{ p.category }}</span>
+                        <span class="badge bg-light text-dark border">
+                            {% if p.category == 'Fresh Produce' %}🥦
+                            {% elif p.category == 'Dairy & Eggs' %}🥛
+                            {% elif p.category == 'Bakery' %}🥐
+                            {% elif p.category == 'Beverages' %}🧃
+                            {% elif p.category == 'Pantry & Grains' %}🌾
+                            {% elif p.category == 'Snacks & Sweets' %}🍫
+                            {% elif p.category == 'Canned & Packaged' %}🥫
+                            {% elif p.category == 'Household Essentials' %}🧼
+                            {% endif %}
+                            {{ p.category }}
+                        </span>
                     </td>
                     <td>
                         <code class="text-secondary small">{{ p.barcode or '-' }}</code>
                     </td>
-                    <td class="text-end fw-bold text-success">
+                    <td class="text-end fw-bold text-success font-monospace">
                         {{ p.unit_price | currency }}
                     </td>
                     <td class="text-center">
@@ -125,16 +138,16 @@
                             <span class="text-muted">-</span>
                         {% endif %}
                     </td>
-                    <td class="small text-muted text-truncate" style="max-width: 130px;">
+                    <td class="small text-muted text-truncate" style="max-width: 140px;">
                         {{ p.supplier.name if p.supplier else '-' }}
                     </td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ url_for('products.edit', product_id=p.product_id) }}" class="btn btn-sm btn-light border" title="Edit Product">
+                            <a href="{{ url_for('products.edit', product_id=p.product_id) }}" class="btn btn-sm btn-light border py-1 px-2" title="Edit Product">
                                 <i class="fa-solid fa-pen-to-square text-primary"></i>
                             </a>
                             <form method="POST" action="{{ url_for('products.delete', product_id=p.product_id) }}" onsubmit="return confirm('Are you sure you want to remove {{ p.name }}?');" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-light border" title="Delete Product">
+                                <button type="submit" class="btn btn-sm btn-light border py-1 px-2" title="Delete Product">
                                     <i class="fa-solid fa-trash text-danger"></i>
                                 </button>
                             </form>
@@ -144,7 +157,7 @@
                 {% else %}
                 <tr>
                     <td colspan="10" class="text-center text-muted py-5">
-                        <i class="fa-solid fa-box-open fs-2 d-block mb-2 text-muted"></i>
+                        <i class="fa-solid fa-box-open fs-2 d-block mb-2 text-muted opacity-50"></i>
                         No products match your search or filter criteria.
                     </td>
                 </tr>
@@ -152,9 +165,9 @@
             </tbody>
         </table>
     </div>
-    <div class="p-3 border-top bg-light text-muted small d-flex justify-content-between">
-        <span>Showing <strong>{{ products|length }}</strong> products</span>
-        <span>GreenLeaf Grocers Catalog</span>
+    <div class="p-3 border-top bg-light text-muted small d-flex justify-content-between align-items-center">
+        <span>Showing <strong>{{ products|length }}</strong> catalog products</span>
+        <span class="badge bg-white text-secondary border">Active Inventory Database</span>
     </div>
 </div>
 {% endblock %}

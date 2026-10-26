@@ -4,76 +4,82 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h1 class="h3 fw-bold text-dark mb-1">Analytics & Reporting Dashboard</h1>
-        <p class="text-muted small mb-0">Gain actionable insights into store revenue, top categories, stock velocity, and forecast trends.</p>
+        <h1 class="h3 fw-bold text-dark mb-1">Analytics & Business Intelligence</h1>
+        <p class="text-muted small mb-0">High-velocity reporting, product demand rankings, capital turnover, and 7-day predictive forecasting.</p>
     </div>
     <!-- Export CSV Menu -->
     <div class="dropdown">
-        <button class="btn btn-outline-success dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
+        <button class="btn btn-outline-success rounded-pill px-3 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-file-export me-1"></i> Export Reports to CSV
         </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-            <li><a class="dropdown-item" href="{{ url_for('reports.export_report_csv', report_type='daily') }}"><i class="fa-solid fa-calendar-day me-2 text-success"></i> Daily Sales CSV</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('reports.export_report_csv', report_type='monthly') }}"><i class="fa-solid fa-calendar-days me-2 text-primary"></i> Monthly Sales CSV</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('reports.export_report_csv', report_type='top-products') }}"><i class="fa-solid fa-trophy me-2 text-warning"></i> Top Products CSV</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('reports.export_report_csv', report_type='slow-moving') }}"><i class="fa-solid fa-hourglass-end me-2 text-danger"></i> Slow-Moving Products CSV</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{{ url_for('reports.export_report_csv', report_type='low-stock') }}"><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i> Low Stock Reorder CSV</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('reports.export_report_csv', report_type='expiry') }}"><i class="fa-solid fa-clock-rotate-left me-2 text-warning"></i> Expiry Tracker CSV</a></li>
+        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2">
+            <li><a class="dropdown-item py-2" href="{{ url_for('reports.export_report_csv', report_type='daily') }}"><i class="fa-solid fa-calendar-day me-2 text-success"></i> Daily Sales CSV</a></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('reports.export_report_csv', report_type='monthly') }}"><i class="fa-solid fa-calendar-days me-2 text-primary"></i> Monthly Sales CSV</a></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('reports.export_report_csv', report_type='top-products') }}"><i class="fa-solid fa-trophy me-2 text-warning"></i> Top Products CSV</a></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('reports.export_report_csv', report_type='slow-moving') }}"><i class="fa-solid fa-hourglass-end me-2 text-danger"></i> Slow-Moving Products CSV</a></li>
+            <li><hr class="dropdown-divider my-1"></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('reports.export_report_csv', report_type='low-stock') }}"><i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i> Low Stock Reorder CSV</a></li>
+            <li><a class="dropdown-item py-2" href="{{ url_for('reports.export_report_csv', report_type='expiry') }}"><i class="fa-solid fa-clock-rotate-left me-2 text-warning"></i> Expiry Tracker CSV</a></li>
         </ul>
     </div>
 </div>
 
-<!-- Date Range Selector -->
+<!-- Date Range Selector with Quick Preset Buttons -->
 <div class="card stat-card p-3 mb-4">
-    <form method="GET" action="{{ url_for('reports.index') }}" class="row g-2 align-items-center">
-        <div class="col-12 col-md-4">
-            <label class="form-label small fw-bold text-secondary mb-1">Start Date</label>
-            <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+    <form id="reportsFilterForm" method="GET" action="{{ url_for('reports.index') }}" class="row g-2 align-items-center">
+        <div class="col-12 col-md-3">
+            <label class="form-label small fw-bold text-muted mb-1">Start Date</label>
+            <input type="date" id="inputStartDate" name="start_date" class="form-control" value="{{ start_date }}">
         </div>
-        <div class="col-12 col-md-4">
-            <label class="form-label small fw-bold text-secondary mb-1">End Date</label>
-            <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+        <div class="col-12 col-md-3">
+            <label class="form-label small fw-bold text-muted mb-1">End Date</label>
+            <input type="date" id="inputEndDate" name="end_date" class="form-control" value="{{ end_date }}">
         </div>
-        <div class="col-12 col-md-4 d-flex align-items-end gap-2">
-            <button type="submit" class="btn btn-success flex-grow-1">
-                <i class="fa-solid fa-filter me-1"></i> Apply Filter
+        <div class="col-12 col-md-6 d-flex align-items-end gap-2 flex-wrap">
+            <button type="submit" class="btn btn-success px-4 rounded-pill">
+                <i class="fa-solid fa-filter me-1"></i> Apply
             </button>
-            <a href="{{ url_for('reports.index') }}" class="btn btn-light border" title="Reset to 30 Days">
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-secondary" onclick="setPresetRange(7)">7 Days</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="setPresetRange(30)">30 Days</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="setPresetRange(90)">90 Days</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="setPresetRange('ytd')">YTD</button>
+            </div>
+            <a href="{{ url_for('reports.index') }}" class="btn btn-light border btn-sm rounded-circle" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;" title="Reset filter">
                 <i class="fa-solid fa-rotate-left"></i>
             </a>
         </div>
     </form>
 </div>
 
-<!-- KPIs in Selected Range -->
+<!-- Period KPIs Summary Cards -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
-        <div class="card stat-card p-3">
-            <span class="text-muted small fw-semibold text-uppercase">Period Revenue</span>
-            <h4 class="fw-bold mb-0 mt-1 text-success">${{ "%.2f"|format(kpis.total_revenue) }}</h4>
-            <span class="text-muted small">{{ kpis.total_bills }} customer orders</span>
+        <div class="card stat-card glow-green p-3 h-100">
+            <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Period Revenue</span>
+            <h4 class="fw-bold mb-0 mt-1 text-success font-monospace">${{ "%.2f"|format(kpis.total_revenue) }}</h4>
+            <span class="text-muted small mt-1">{{ kpis.total_bills }} customer orders</span>
         </div>
     </div>
     <div class="col-6 col-lg-3">
-        <div class="card stat-card p-3">
-            <span class="text-muted small fw-semibold text-uppercase">Average Ticket</span>
-            <h4 class="fw-bold mb-0 mt-1 text-dark">${{ "%.2f"|format(kpis.avg_bill_value) }}</h4>
-            <span class="text-muted small">Revenue / order</span>
+        <div class="card stat-card glow-blue p-3 h-100">
+            <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Average Ticket</span>
+            <h4 class="fw-bold mb-0 mt-1 text-dark font-monospace">${{ "%.2f"|format(kpis.avg_bill_value) }}</h4>
+            <span class="text-muted small mt-1">Revenue per order</span>
         </div>
     </div>
     <div class="col-6 col-lg-3">
-        <div class="card stat-card p-3">
-            <span class="text-muted small fw-semibold text-uppercase">Stock Turnover</span>
+        <div class="card stat-card glow-purple p-3 h-100">
+            <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Stock Turnover</span>
             <h4 class="fw-bold mb-0 mt-1 text-dark">{{ kpis.stock_turnover }}x</h4>
-            <span class="text-muted small">Inv: ${{ "%.2f"|format(kpis.total_inventory_val) }}</span>
+            <span class="text-muted small mt-1">Inventory: ${{ "%.2f"|format(kpis.total_inventory_val) }}</span>
         </div>
     </div>
     <div class="col-6 col-lg-3">
-        <div class="card stat-card p-3">
-            <span class="text-muted small fw-semibold text-uppercase">Top Category Share</span>
+        <div class="card stat-card glow-amber p-3 h-100">
+            <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Top Category Share</span>
             <h4 class="fw-bold mb-0 mt-1 text-dark">{{ kpis.top_category_share }}%</h4>
-            <span class="text-muted small text-truncate d-block">{{ kpis.top_category_name }}</span>
+            <span class="text-muted small text-truncate d-block mt-1">{{ kpis.top_category_name }}</span>
         </div>
     </div>
 </div>
@@ -82,14 +88,17 @@
 <div class="row g-3 mb-4">
     <!-- Daily Sales Chart -->
     <div class="col-12 col-xl-7">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-chart-line text-success me-2"></i> Daily Sales Trend
-                </h6>
-                <span class="badge bg-light text-muted border">Revenue & Volume</span>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-chart-line text-success me-2"></i> Daily Sales & Order Volume
+                    </h6>
+                    <small class="text-muted">Combined revenue ($) and order count per day</small>
+                </div>
+                <span class="badge bg-light text-secondary border">Daily Velocity</span>
             </div>
-            <div style="height: 300px; position: relative;">
+            <div style="height: 310px; position: relative;">
                 <canvas id="dailySalesChart"></canvas>
             </div>
         </div>
@@ -97,14 +106,17 @@
 
     <!-- Monthly Sales Trend Chart -->
     <div class="col-12 col-xl-5">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-calendar-days text-primary me-2"></i> Monthly Sales History
-                </h6>
-                <span class="badge bg-light text-muted border">Last 12 Months</span>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-calendar-days text-primary me-2"></i> Monthly Revenue Trend
+                    </h6>
+                    <small class="text-muted">Month-by-month historical comparison</small>
+                </div>
+                <span class="badge bg-light text-secondary border">12 Months</span>
             </div>
-            <div style="height: 300px; position: relative;">
+            <div style="height: 310px; position: relative;">
                 <canvas id="monthlySalesChart"></canvas>
             </div>
         </div>
@@ -115,11 +127,14 @@
 <div class="row g-3 mb-4">
     <!-- Top 10 Selling Products -->
     <div class="col-12 col-xl-7">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-trophy text-warning me-2"></i> Top 10 Best Selling Products
-                </h6>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-trophy text-warning me-2"></i> Top 10 Best Selling Products
+                    </h6>
+                    <small class="text-muted">Switch metrics to see best revenue earners vs volume movers</small>
+                </div>
                 <div class="btn-group btn-group-sm" role="group">
                     <button type="button" class="btn btn-outline-success active" id="btnToggleRev" onclick="toggleTopProducts('rev')">
                         By Revenue ($)
@@ -137,12 +152,15 @@
 
     <!-- Category Sales Share Chart -->
     <div class="col-12 col-xl-5">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold text-dark mb-0">
-                    <i class="fa-solid fa-pie-chart text-info me-2"></i> Category Revenue Contribution
-                </h6>
-                <span class="badge bg-light text-muted border">% Distribution</span>
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-pie-chart text-info me-2"></i> Category Revenue Contribution
+                    </h6>
+                    <small class="text-muted">Percentage share of store revenue</small>
+                </div>
+                <span class="badge bg-light text-secondary border">Doughnut</span>
             </div>
             <div style="height: 320px; position: relative;" class="d-flex align-items-center justify-content-center">
                 <canvas id="categoryDistributionChart"></canvas>
@@ -155,17 +173,17 @@
 <div class="row g-3 mb-4">
     <!-- 7-Day Sales Forecasting (Bonus Feature) -->
     <div class="col-12 col-xl-6">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h6 class="fw-bold text-dark mb-0">
-                        <i class="fa-solid fa-wand-magic-sparkles text-primary me-2"></i> 7-Day Sales Forecast (Bonus Feature)
+                    <h6 class="fw-bold text-purple mb-0" style="color: #7c3aed;">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> 7-Day Sales Forecast (Predictive AI)
                     </h6>
-                    <small class="text-muted">Predictive linear regression model based on daily sales trends</small>
+                    <small class="text-muted">Projected future daily demand based on linear regression modeling</small>
                 </div>
-                <span class="badge bg-primary-subtle text-primary border">AI / Regression</span>
+                <span class="badge bg-purple-subtle text-purple border" style="background-color: #f3e8ff; color: #7c3aed; border-color: #e9d5ff;">Linear Model</span>
             </div>
-            <div style="height: 280px; position: relative;">
+            <div style="height: 290px; position: relative;">
                 <canvas id="forecastChart"></canvas>
             </div>
         </div>
@@ -173,21 +191,21 @@
 
     <!-- Slow-Moving Products (Past 30 Days) -->
     <div class="col-12 col-xl-6">
-        <div class="card stat-card p-3 h-100">
+        <div class="card stat-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h6 class="fw-bold text-danger mb-0">
-                        <i class="fa-solid fa-hourglass-end me-2"></i> Slow-Moving Products (Past 30 Days)
+                        <i class="fa-solid fa-hourglass-end me-2"></i> Slow-Moving Inventory (Past 30 Days)
                     </h6>
-                    <small class="text-muted">Stock tied up in low velocity goods (&le; 3 units sold in 30 days)</small>
+                    <small class="text-muted">Items with &le; 3 units sold in 30 days and trapped capital</small>
                 </div>
-                <a href="{{ url_for('reports.export_report_csv', report_type='slow-moving') }}" class="btn btn-sm btn-outline-danger">
-                    <i class="fa-solid fa-download me-1"></i> CSV
+                <a href="{{ url_for('reports.export_report_csv', report_type='slow-moving') }}" class="btn btn-sm btn-outline-danger rounded-pill">
+                    <i class="fa-solid fa-download me-1"></i> Export CSV
                 </a>
             </div>
-            <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+            <div class="table-responsive" style="max-height: 290px; overflow-y: auto;">
                 <table class="table table-hover align-middle mb-0 small">
-                    <thead class="table-light sticky-top">
+                    <thead class="sticky-top">
                         <tr>
                             <th>Product</th>
                             <th>Category</th>
@@ -199,14 +217,14 @@
                     <tbody>
                         {% for sm in slow_movers %}
                         <tr>
-                            <td class="fw-semibold text-truncate" style="max-width: 140px;">{{ sm.name }}</td>
+                            <td class="fw-bold text-truncate" style="max-width: 140px;">{{ sm.name }}</td>
                             <td><span class="badge bg-light text-secondary">{{ sm.category }}</span></td>
                             <td class="text-center">{{ sm.stock_qty }}</td>
                             <td class="text-center text-danger fw-bold">{{ sm.units_sold_last_30d }}</td>
-                            <td class="text-end fw-bold text-dark">${{ "%.2f"|format(sm.inventory_value) }}</td>
+                            <td class="text-end fw-bold text-dark font-monospace">${{ "%.2f"|format(sm.inventory_value) }}</td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="5" class="text-center text-success py-3">No stagnant inventory detected. Excellent velocity!</td></tr>
+                        <tr><td colspan="5" class="text-center text-success py-4">No slow-moving inventory detected. High stock turnover!</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -218,9 +236,31 @@
 
 {% block extra_scripts %}
 <script>
-    // 1. Daily Sales Chart
+    // Preset date filter helper
+    function setPresetRange(days) {
+        const end = new Date();
+        const start = new Date();
+        if (days === 'ytd') {
+            start.setMonth(0);
+            start.setDate(1);
+        } else {
+            start.setDate(end.getDate() - days);
+        }
+
+        const format = d => d.toISOString().split('T')[0];
+        document.getElementById('inputStartDate').value = format(start);
+        document.getElementById('inputEndDate').value = format(end);
+        document.getElementById('reportsFilterForm').submit();
+    }
+
+    // 1. Daily Sales Chart (Line + Bar)
     const dailyData = {{ daily_sales | tojson }};
     const ctxDaily = document.getElementById('dailySalesChart').getContext('2d');
+    
+    const gradDaily = ctxDaily.createLinearGradient(0, 0, 0, 260);
+    gradDaily.addColorStop(0, 'rgba(22, 163, 74, 0.25)');
+    gradDaily.addColorStop(1, 'rgba(22, 163, 74, 0.01)');
+
     new Chart(ctxDaily, {
         type: 'bar',
         data: {
@@ -230,17 +270,20 @@
                     type: 'line',
                     label: 'Revenue ($)',
                     data: dailyData.map(d => d.revenue),
-                    borderColor: '#2e7d32',
-                    backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                    borderColor: '#15803d',
+                    backgroundColor: gradDaily,
+                    fill: true,
                     yAxisID: 'yRev',
-                    tension: 0.3,
-                    borderWidth: 2
+                    tension: 0.35,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#15803d',
+                    pointRadius: 3
                 },
                 {
                     type: 'bar',
-                    label: 'Bills Count',
+                    label: 'Orders Count',
                     data: dailyData.map(d => d.bills),
-                    backgroundColor: 'rgba(2, 136, 209, 0.4)',
+                    backgroundColor: 'rgba(14, 165, 233, 0.45)',
                     yAxisID: 'yBills',
                     borderRadius: 4
                 }
@@ -249,11 +292,23 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    cornerRadius: 8,
+                    padding: 10,
+                    callbacks: {
+                        label: ctx => ctx.dataset.type === 'line' ? ` Revenue: $${ctx.raw.toFixed(2)}` : ` Orders: ${ctx.raw}`
+                    }
+                }
+            },
             scales: {
+                x: { grid: { display: false } },
                 yRev: {
                     type: 'linear',
                     position: 'left',
                     beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
                     ticks: { callback: v => '$' + v }
                 },
                 yBills: {
@@ -276,16 +331,27 @@
             datasets: [{
                 label: 'Monthly Revenue ($)',
                 data: monthlyData.map(m => m.revenue),
-                backgroundColor: '#1976d2',
-                borderRadius: 6
+                backgroundColor: '#0284c7',
+                borderRadius: 8
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: ctx => ` Revenue: $${ctx.raw.toLocaleString(undefined, {minimumFractionDigits: 2})}`
+                    }
+                }
+            },
             scales: {
+                x: { grid: { display: false } },
                 y: {
                     beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
                     ticks: { callback: v => '$' + v }
                 }
             }
@@ -304,19 +370,30 @@
             datasets: [{
                 label: 'Revenue ($)',
                 data: topRevData.map(p => p.total_rev),
-                backgroundColor: '#388e3c',
-                borderRadius: 4
+                backgroundColor: '#16a34a',
+                borderRadius: 6
             }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: ctx => ` $${ctx.raw.toLocaleString(undefined, {minimumFractionDigits: 2})}`
+                    }
+                }
+            },
             scales: {
                 x: {
                     beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
                     ticks: { callback: v => '$' + v }
-                }
+                },
+                y: { grid: { display: false } }
             }
         }
     });
@@ -331,7 +408,7 @@
             topChart.data.labels = topRevData.map(p => p.product_name);
             topChart.data.datasets[0].label = 'Revenue ($)';
             topChart.data.datasets[0].data = topRevData.map(p => p.total_rev);
-            topChart.data.datasets[0].backgroundColor = '#388e3c';
+            topChart.data.datasets[0].backgroundColor = '#16a34a';
             topChart.options.scales.x.ticks.callback = v => '$' + v;
         } else {
             btnQty.classList.add('active');
@@ -339,7 +416,7 @@
             topChart.data.labels = topQtyData.map(p => p.product_name);
             topChart.data.datasets[0].label = 'Units Sold';
             topChart.data.datasets[0].data = topQtyData.map(p => p.total_qty);
-            topChart.data.datasets[0].backgroundColor = '#f57c00';
+            topChart.data.datasets[0].backgroundColor = '#f59e0b';
             topChart.options.scales.x.ticks.callback = v => v;
         }
         topChart.update();
@@ -354,17 +431,21 @@
             labels: catData.map(c => c.category),
             datasets: [{
                 data: catData.map(c => c.total_revenue),
-                backgroundColor: ['#2e7d32', '#43a047', '#66bb6a', '#1e88e5', '#fb8c00', '#8e24aa', '#e53935', '#00acc1', '#3949ab'],
-                borderWidth: 2,
-                borderColor: '#ffffff'
+                backgroundColor: ['#15803d', '#22c55e', '#0284c7', '#38bdf8', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#64748b'],
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '68%',
             plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+                legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 10 }, padding: 10 } },
                 tooltip: {
+                    backgroundColor: '#0f172a',
+                    cornerRadius: 8,
                     callbacks: {
                         label: ctx => ` ${ctx.label}: $${ctx.raw.toLocaleString(undefined, {minimumFractionDigits: 2})}`
                     }
@@ -376,6 +457,11 @@
     // 5. 7-Day Forecast Chart
     const forecastData = {{ forecast | tojson }};
     const ctxForecast = document.getElementById('forecastChart').getContext('2d');
+    
+    const gradForecast = ctxForecast.createLinearGradient(0, 0, 0, 260);
+    gradForecast.addColorStop(0, 'rgba(124, 58, 237, 0.22)');
+    gradForecast.addColorStop(1, 'rgba(124, 58, 237, 0.01)');
+
     new Chart(ctxForecast, {
         type: 'line',
         data: {
@@ -383,21 +469,33 @@
             datasets: [{
                 label: 'Predicted Daily Revenue ($)',
                 data: forecastData.map(f => f.predicted_revenue),
-                borderColor: '#673ab7',
-                backgroundColor: 'rgba(103, 58, 183, 0.15)',
-                borderDash: [5, 5],
+                borderColor: '#7c3aed',
+                backgroundColor: gradForecast,
+                borderDash: [6, 6],
                 fill: true,
-                tension: 0.2,
-                pointBackgroundColor: '#673ab7',
+                tension: 0.3,
+                borderWidth: 2.5,
+                pointBackgroundColor: '#7c3aed',
                 pointRadius: 5
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: ctx => ` Forecast: $${ctx.raw.toFixed(2)}`
+                    }
+                }
+            },
             scales: {
+                x: { grid: { display: false } },
                 y: {
                     beginAtZero: false,
+                    grid: { color: '#f1f5f9' },
                     ticks: { callback: v => '$' + v }
                 }
             }

@@ -2,55 +2,55 @@
 {% block title %}Sign In{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 75vh;">
-    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-        <div class="card shadow-lg border-0 rounded-4">
-            <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <div class="stat-icon icon-rev mx-auto mb-3" style="width: 64px; height: 64px; font-size: 2rem;">
-                        <i class="fa-solid fa-leaf text-success"></i>
+<div class="row justify-content-center align-items-center my-4 my-md-5" style="min-height: 72vh;">
+    <div class="col-12 col-sm-9 col-md-7 col-lg-5 col-xl-4">
+        <div class="card stat-card p-4 p-md-5 border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="text-center mb-4">
+                <div class="brand-logo-badge mx-auto mb-3" style="width: 54px; height: 54px; border-radius: 14px;">
+                    <i class="fa-solid fa-leaf text-white fs-4"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">GreenLeaf Grocers</h3>
+                <p class="text-muted small">Inventory, POS & Analytics Portal</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+                <div class="mb-3">
+                    <label for="username" class="form-label small fw-bold text-muted">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 ps-0" id="username" name="username" placeholder="Enter username" required autofocus>
                     </div>
-                    <h3 class="fw-bold text-success mb-1">GreenLeaf Grocers</h3>
-                    <p class="text-muted small">Inventory & Sales Management System</p>
                 </div>
 
-                <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label small fw-bold text-secondary">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0 text-muted">
-                                <i class="fa-solid fa-user"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0 ps-0" id="username" name="username" placeholder="Enter username" required autofocus>
-                        </div>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="password" class="form-label small fw-bold text-muted mb-0">Password</label>
                     </div>
-
-                    <div class="mb-4">
-                        <label for="password" class="form-label small fw-bold text-secondary">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0 text-muted">
-                                <i class="fa-solid fa-lock"></i>
-                            </span>
-                            <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" placeholder="Enter password" required>
-                        </div>
+                    <div class="input-group mt-1">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" placeholder="Enter password" required>
                     </div>
+                </div>
 
-                    <button type="submit" class="btn btn-success w-100 py-2 fw-semibold shadow-sm mb-3">
-                        <i class="fa-solid fa-right-to-bracket me-1"></i> Sign In
+                <button type="submit" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm mb-3">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal
+                </button>
+            </form>
+
+            <!-- Quick Demo Credentials Box -->
+            <div class="border-top pt-3 text-center">
+                <span class="small text-muted fw-semibold d-block mb-2">⚡ Quick Demo One-Click Access</span>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="fillCreds('admin', 'admin123')">
+                        <i class="fa-solid fa-shield-halved me-1"></i> Admin (admin)
                     </button>
-                </form>
-
-                <!-- Demo quick login helper -->
-                <div class="border-top pt-3 text-center">
-                    <p class="small text-muted mb-2">Quick Demo Access (Click to auto-fill):</p>
-                    <div class="d-flex justify-content-center gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-success" onclick="fillCreds('admin', 'admin123')">
-                            <i class="fa-solid fa-shield-halved me-1"></i> Admin
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="fillCreds('cashier', 'cashier123')">
-                            <i class="fa-solid fa-cash-register me-1"></i> Cashier
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="fillCreds('cashier', 'cashier123')">
+                        <i class="fa-solid fa-cash-register me-1"></i> Cashier (cashier)
+                    </button>
                 </div>
             </div>
         </div>
